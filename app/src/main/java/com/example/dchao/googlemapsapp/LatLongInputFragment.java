@@ -6,8 +6,14 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -42,28 +48,26 @@ public class LatLongInputFragment extends DialogFragment {
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        // Get the layout inflater
-        LayoutInflater inflater = getActivity().getLayoutInflater();
+        final Dialog dialog = new Dialog(getActivity());
+        dialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+        dialog.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        dialog.setContentView(R.layout.popup);
+        dialog.getWindow().setBackgroundDrawable(
+                new ColorDrawable(Color.TRANSPARENT));
+        dialog.show();
+        Button mButton = (Button) dialog.findViewById(R.id.submitButton);
+        EditText username = (EditText) dialog.findViewById(R.id.username);
+        EditText password = (EditText) dialog.findViewById(R.id.password);
+        mButton.setOnClickListener(new View.OnClickListener() {
 
-        // Inflate and set the layout for the dialog
-        // Pass null as the parent view because its going in the dialog layout
-        builder.setView(inflater.inflate(R.layout.popup, null))
-                // Add action buttons
-                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int id) {
-                        // sign in the user ...
-                        //TextView tv = (TextView) getView().findViewById(R.id.username);
-                        mCallback.onDialogDismissListener(1);
-                    }
-                })
-                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        LatLongInputFragment.this.getDialog().cancel();
-                    }
-                });
-        return builder.create();
+            @Override
+            public void onClick(View v) {
+                mListener.setOnSubmitListener(mEditText.getText().toString());
+                dismiss();
+            }
+        });
+        return dialog;
     }
 
 
